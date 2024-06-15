@@ -1,4 +1,4 @@
-package io.schiar.drappwer.complication
+package io.schiar.drappwer.library.complication
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType

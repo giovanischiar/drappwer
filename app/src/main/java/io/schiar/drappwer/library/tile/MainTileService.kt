@@ -1,4 +1,4 @@
-package io.schiar.drappwer.tile
+package io.schiar.drappwer.library.tile
 
 import android.content.Context
 import androidx.compose.runtime.Composable

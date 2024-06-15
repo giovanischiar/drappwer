@@ -1,4 +1,4 @@
-package io.schiar.drappwer.presentation.theme
+package io.schiar.drappwer.view.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
