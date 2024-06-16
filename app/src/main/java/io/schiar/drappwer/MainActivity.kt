@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
-import io.schiar.drappwer.model.SelectedAppIndexRepository
-import io.schiar.drappwer.model.local.SelectedAppIndexLocalDataSource
+import io.schiar.drappwer.model.AppRepository
+import io.schiar.drappwer.model.local.AppLocalDataSource
 import io.schiar.drappwer.view.apps.AppsScreen
 import io.schiar.drappwer.viewmodel.AppViewModel
 import io.schiar.drappwer.viewmodel.ViewModelFactory
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         val viewModelProvider = ViewModelProvider(
             this,
             ViewModelFactory(
-                appRepository = SelectedAppIndexRepository(appDataSource = SelectedAppIndexLocalDataSource())
+                appRepository = AppRepository(appDataSource = AppLocalDataSource())
             )
         )
         setContent { AppsScreen(viewModel = viewModelProvider[AppViewModel::class.java]) }
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun AppsScreenPreview() {
         AppsScreen(viewModel = AppViewModel(
-                appRepository = SelectedAppIndexRepository(appDataSource = SelectedAppIndexLocalDataSource())
+                appRepository = AppRepository(appDataSource = AppLocalDataSource())
             )
         )
     }

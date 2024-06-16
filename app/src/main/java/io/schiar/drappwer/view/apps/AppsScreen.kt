@@ -43,7 +43,7 @@ fun AppsScreen(viewModel: AppViewModel) {
     mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
     val apps by viewModel.appsFlow.collectAsState(initial = emptyList())
-    val selectedAppsIndices by viewModel.selectedAppsIndicesFlow.collectAsState(initial = emptyList())
+    val selectedApps by viewModel.selectedAppsFlow.collectAsState(initial = emptyList())
 
     val resolvedInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         pm.queryIntentActivities(
@@ -83,8 +83,8 @@ fun AppsScreen(viewModel: AppViewModel) {
                 .fillMaxSize()
                 .padding(all = 30.dp)) {
                 FlowRow {
-                    selectedAppsIndices.map { index ->
-                        val (_, icon) = apps[index]
+                    selectedApps.map { app ->
+                        val (_, icon) = app
                         Image(
                             modifier = Modifier.size(20.dp),
                             bitmap = icon.toBitmap().asImageBitmap(),
