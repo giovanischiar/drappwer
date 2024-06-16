@@ -1,25 +1,22 @@
 package io.schiar.drappwer.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.schiar.drappwer.model.App
+import io.schiar.drappwer.model.SelectedAppIndexRepository
 import io.schiar.drappwer.view.shared.viewdata.AppViewData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class AppsViewModel: ViewModel() {
+class AppViewModel(private val appRepository: SelectedAppIndexRepository): ViewModel() {
     private val apps: MutableList<App> = mutableListOf()
-    private var selectedAppsIndices: List<Int> = mutableListOf()
-
     private val appsMutableStateFlow: MutableStateFlow<List<AppViewData>> by lazy {
         MutableStateFlow(apps.map { it.toViewData() })
     }
     val appsFlow: Flow<List<AppViewData>> = appsMutableStateFlow
-
-    private val selectedAppsIndicesStateFlow: MutableStateFlow<List<Int>> by lazy {
-        MutableStateFlow(selectedAppsIndices)
-    }
-    val selectedAppsIndicesFlow: Flow<List<Int>> = selectedAppsIndicesStateFlow
+    val selectedAppsIndicesFlow: Flow<List<Int>> = appRepository.selectedAppsIndicesFlow
 
     fun addAppOf(name: String, packageName: String, icon: ByteArray) {
         val app = App(name = name, packageName = packageName, icon = icon)
@@ -28,14 +25,6 @@ class AppsViewModel: ViewModel() {
     }
 
     fun selectAppOf(index: Int) {
-        val mutableList = selectedAppsIndices.toMutableList()
-        val indexOfApp = selectedAppsIndices.indexOf(index)
-        if (indexOfApp < 0) {
-            mutableList.add(index)
-        } else {
-            mutableList.removeAt(indexOfApp)
-        }
-        selectedAppsIndices = mutableList
-        selectedAppsIndicesStateFlow.update { selectedAppsIndices }
+        viewModelScope.launch { appRepository.selectAppOf(index = index) }
     }
 }

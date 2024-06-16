@@ -26,18 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import io.schiar.drappwer.view.shared.theme.DrappwerTheme
 import io.schiar.drappwer.view.shared.toBitmap
 import io.schiar.drappwer.view.shared.toByteArray
-import io.schiar.drappwer.viewmodel.AppsViewModel
+import io.schiar.drappwer.viewmodel.AppViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AppsScreen(viewModel: AppsViewModel) {
+fun AppsScreen(viewModel: AppViewModel) {
     val context = LocalContext.current
     val pm = remember { context.packageManager }
     val mainIntent = remember { Intent(Intent.ACTION_MAIN, null) }

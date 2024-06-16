@@ -9,29 +9,38 @@ package io.schiar.drappwer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import io.schiar.drappwer.model.SelectedAppIndexRepository
+import io.schiar.drappwer.model.local.SelectedAppIndexLocalDataSource
 import io.schiar.drappwer.view.apps.AppsScreen
-import io.schiar.drappwer.viewmodel.AppsViewModel
+import io.schiar.drappwer.viewmodel.AppViewModel
+import io.schiar.drappwer.viewmodel.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         setTheme(android.R.style.Theme_DeviceDefault)
-        val appsViewModel by viewModels<AppsViewModel>()
-        setContent { AppsScreen(viewModel = appsViewModel) }
+        val viewModelProvider = ViewModelProvider(
+            this,
+            ViewModelFactory(
+                appRepository = SelectedAppIndexRepository(appDataSource = SelectedAppIndexLocalDataSource())
+            )
+        )
+        setContent { AppsScreen(viewModel = viewModelProvider[AppViewModel::class.java]) }
     }
 
     @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
     @Composable
     fun AppsScreenPreview() {
-        AppsScreen(viewModel = AppsViewModel())
+        AppsScreen(viewModel = AppViewModel(
+                appRepository = SelectedAppIndexRepository(appDataSource = SelectedAppIndexLocalDataSource())
+            )
+        )
     }
 }
 
