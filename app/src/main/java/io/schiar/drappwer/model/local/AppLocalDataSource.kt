@@ -4,6 +4,8 @@ import io.schiar.drappwer.model.App
 import io.schiar.drappwer.model.AppDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class AppLocalDataSource: AppDataSource {
@@ -19,6 +21,10 @@ class AppLocalDataSource: AppDataSource {
 
     override fun retrieve(): Flow<List<App>> {
         return appsStateFlow
+    }
+
+    override fun retrieveSelected(): Flow<List<App>> {
+        return appsStateFlow.map { apps -> apps.filter { it.selected } }
     }
 
     override suspend fun update(app: App) {

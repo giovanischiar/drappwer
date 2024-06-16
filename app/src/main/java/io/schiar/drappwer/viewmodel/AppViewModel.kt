@@ -7,9 +7,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class AppViewModel(private val appRepository: AppRepository): ViewModel() {
-    val appsFlow = appRepository.appsFlow.map { apps -> apps.map { app -> app.toViewData() } }
-    val selectedAppsFlow = appRepository.appsFlow
-        .map { apps -> apps.filter { it.selected }.map { app -> app.toViewData() } }
+    val appsFlow = appRepository.appsFlow
+        .map { apps -> apps.map { app -> app.toViewData() } }
+    val selectedAppsFlow = appRepository.selectedAppsFlow
+        .map { apps -> apps.map { app -> app.toViewData() } }
 
     fun addAppOf(name: String, packageName: String, icon: ByteArray) = viewModelScope.launch {
         appRepository.addAppOf(name = name, packageName = packageName, icon = icon)
