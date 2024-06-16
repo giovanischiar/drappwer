@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -95,8 +97,8 @@ fun AppsScreen(viewModel: AppViewModel) {
 
                 LazyColumn {
                     items(count = apps.size) { index ->
-                        val (appName, icon) = apps[index]
-                        Row(modifier = Modifier.clickable {
+                        val (appName, icon, selected) = apps[index]
+                        Row(modifier = Modifier.fillMaxWidth().background(color = if (selected) Color.DarkGray else Color.Transparent).clickable {
                             viewModel.selectAppOf(index = index)
                         }) {
                             Image(

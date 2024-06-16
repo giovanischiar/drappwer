@@ -12,6 +12,7 @@ class AppRepository(private val appDataSource: AppDataSource) {
     }
 
     suspend fun selectAppOf(index: Int) {
+        if (apps.size == 6) return
         val app = apps.getOrNull(index = index) ?: return
         appDataSource.update(app.switch())
     }
