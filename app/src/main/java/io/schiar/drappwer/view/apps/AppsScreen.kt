@@ -18,7 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,72 +30,79 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
-import io.schiar.drappwer.view.theme.DrappwerTheme
+import io.schiar.drappwer.view.shared.theme.DrappwerTheme
+import io.schiar.drappwer.view.shared.toBitmap
+import io.schiar.drappwer.view.shared.toByteArray
+import io.schiar.drappwer.viewmodel.AppsViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AppsScreen() {
+fun AppsScreen(viewModel: AppsViewModel) {
     val context = LocalContext.current
     val pm = remember { context.packageManager }
     val mainIntent = remember { Intent(Intent.ACTION_MAIN, null) }
     mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
-    var resolvedInfos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val apps by viewModel.appsFlow.collectAsState(initial = emptyList())
+    val selectedAppsIndices by viewModel.selectedAppsIndicesFlow.collectAsState(initial = emptyList())
+
+    val resolvedInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         pm.queryIntentActivities(
             mainIntent,
             PackageManager.ResolveInfoFlags.of(0L)
         )
-
     } else {
         pm.queryIntentActivities(mainIntent, 0)
     }
 
-    val apps = resolvedInfos.map { resolvedInfo ->
+    resolvedInfoList.forEach { resolvedInfo ->
         val resources =  pm.getResourcesForApplication(resolvedInfo.activityInfo.applicationInfo)
         val appName = if (resolvedInfo.activityInfo.labelRes != 0) {
             resources.getString(resolvedInfo.activityInfo.labelRes)
         } else {
-            // getting it out of app info - equivalent to context.packageManager.getApplicationInfo
             resolvedInfo.activityInfo.applicationInfo.loadLabel(pm).toString()
         }
-        val iconDrawable = resolvedInfo.activityInfo.loadIcon(pm)
-        return@map Pair(appName, iconDrawable)
-    }
 
-    val appsSelected = remember { mutableStateListOf<Int>() }
+        val packageName = resolvedInfo.activityInfo.packageName ?: ""
+        val iconDrawable = resolvedInfo.activityInfo.loadIcon(pm)
+        viewModel.addAppOf(
+            name = appName,
+            packageName = packageName,
+            icon = iconDrawable.toByteArray()
+        )
+    }
 
     DrappwerTheme {
         Box(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background),
             contentAlignment = Alignment.Center
         ) {
             TimeText()
-            Column(modifier = Modifier.fillMaxSize().padding(all = 30.dp)) {
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 30.dp)) {
                 FlowRow {
-                    appsSelected.map {index ->
-                        val (_, iconDrawable) = apps[index]
+                    selectedAppsIndices.map { index ->
+                        val (_, icon) = apps[index]
                         Image(
                             modifier = Modifier.size(20.dp),
-                            bitmap = iconDrawable.toBitmap().asImageBitmap(),
+                            bitmap = icon.toBitmap().asImageBitmap(),
                             contentDescription = ""
                         )
                     }
                 }
 
                 LazyColumn {
-                    items(count = resolvedInfos.size) { index ->
-                        val (appName, iconDrawable) = apps[index]
+                    items(count = apps.size) { index ->
+                        val (appName, icon) = apps[index]
                         Row(modifier = Modifier.clickable {
-                            val indexOfIndex = appsSelected.indexOf(index)
-                            if (indexOfIndex < 0) {
-                                appsSelected.add(index)
-                            } else {
-                                appsSelected.removeAt(indexOfIndex)
-                            }
+                            viewModel.selectAppOf(index = index)
                         }) {
                             Image(
                                 modifier = Modifier.size(20.dp),
-                                bitmap = iconDrawable.toBitmap().asImageBitmap(),
+                                bitmap = icon.toBitmap().asImageBitmap(),
                                 contentDescription = ""
                             )
                             Spacer(modifier = Modifier.width(5.dp))

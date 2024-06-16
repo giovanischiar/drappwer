@@ -9,24 +9,29 @@ package io.schiar.drappwer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import io.schiar.drappwer.view.apps.AppsScreen
+import io.schiar.drappwer.viewmodel.AppsViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         setTheme(android.R.style.Theme_DeviceDefault)
-        setContent { AppsScreen() }
+        val appsViewModel by viewModels<AppsViewModel>()
+        setContent { AppsScreen(viewModel = appsViewModel) }
     }
 
     @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
     @Composable
     fun AppsScreenPreview() {
-        AppsScreen()
+        AppsScreen(viewModel = AppsViewModel())
     }
 }
 
