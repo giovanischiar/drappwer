@@ -65,6 +65,7 @@ fun AppsScreen(viewModel: AppViewModel) {
 
     val apps by viewModel.appsFlow.collectAsState(initial = emptyList())
     val selectedApps by viewModel.selectedAppsFlow.collectAsState(initial = emptyList())
+    val overcapacity by viewModel.overcapacityFlow.collectAsState(initial = false)
 
     val resolvedInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         pm.queryIntentActivities(
@@ -144,7 +145,8 @@ fun AppsScreen(viewModel: AppViewModel) {
                             },
                             colors = ChipDefaults.chipColors(
                                 backgroundColor = if (selected) Color.Yellow else MaterialTheme.colors.surface
-                            )
+                            ),
+                            enabled = if (!selected) !overcapacity else true
                         )
                     }
                 }

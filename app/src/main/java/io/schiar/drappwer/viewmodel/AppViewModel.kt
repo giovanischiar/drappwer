@@ -11,6 +11,7 @@ class AppViewModel(private val appRepository: AppRepository): ViewModel() {
         .map { apps -> apps.map { app -> app.toViewData() } }
     val selectedAppsFlow = appRepository.selectedAppsFlow
         .map { apps -> apps.map { app -> app.toViewData() } }
+    val overcapacityFlow = appRepository.overcapacityFlow
 
     fun addAppOf(name: String, packageName: String, icon: ByteArray) = viewModelScope.launch {
         appRepository.addAppOf(name = name, packageName = packageName, icon = icon)
